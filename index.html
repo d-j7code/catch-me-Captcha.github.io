@@ -36,8 +36,8 @@
             const gamma = event.gamma; // Y-axis (-90 to 90)
 
             // Adjust sphere position based on gyroscope data
-            sphereX += gamma * 0.1; // Tilt left/right
-            sphereY += beta * 0.1;  // Tilt up/down
+            sphereX += gamma * 0.2; // Tilt left/right
+            sphereY += beta * 0.2;  // Tilt up/down
 
             // Keep sphere within canvas bounds
             sphereX = Math.max(sphereRadius, Math.min(canvas.width - sphereRadius, sphereX));
