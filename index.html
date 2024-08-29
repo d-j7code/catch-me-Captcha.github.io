@@ -44,8 +44,8 @@
             const gamma = event.gamma; // Y-axis (-90 to 90)
 
             // Adjust sphere position based on gyroscope data
-            sphereX += gamma * 0.2; // Tilt left/right
-            sphereY += beta * 0.2;  // Tilt up/down
+            sphereX += gamma * 0.1; // Tilt left/right
+            sphereY += beta * 0.1;  // Tilt up/down
 
             // Keep sphere within canvas bounds
             sphereX = Math.max(sphereRadius, Math.min(canvas.width - sphereRadius, sphereX));
@@ -69,7 +69,23 @@
                 // Change square position randomly
                 squareX = Math.random() * (canvas.width - 100);
                 squareY = Math.random() * (canvas.height - 100);
+
+                // Detect human and show alert
+                if (isHumanMovement(event)) {
+                    alert('Human detected! You win!');
+                }
             }
+        }
+
+        function isHumanMovement(event) {
+            // Define thresholds for reasonable tilt angles (in degrees)
+            const maxTiltX = 30; // Maximum tilt angle along X-axis
+           const maxTiltY = 30; // Maximum tilt angle along Y-axis
+
+           // Check if tilt angles are within reasonable limits
+           if (Math.abs(event.beta) < maxTiltX && Math.abs(event.gamma) < maxTiltY) {
+           // Movements seem human-like
+           return true;            
         }
     </script>
 </body>
