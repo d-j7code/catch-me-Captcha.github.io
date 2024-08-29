@@ -36,8 +36,8 @@
             const gamma = event.gamma; // Y-axis (-90 to 90)
 
             // Adjust sphere position based on gyroscope data
-            sphereX += gamma * 0.2; // Tilt left/right
-            sphereY += beta * 0.2;  // Tilt up/down
+            sphereX += gamma * 0.1; // Tilt left/right
+            sphereY += beta * 0.1;  // Tilt up/down
 
             // Keep sphere within canvas bounds
             sphereX = Math.max(sphereRadius, Math.min(canvas.width - sphereRadius, sphereX));
@@ -55,8 +55,12 @@
             ctx.fill();
 
             // Check if sphere is inside the square
-            const distance = Math.sqrt((sphereX - squareX) ** 2 + (sphereY - squareY) ** 2);
-            if (distance < sphereRadius + squareSize / 2) {
+            if (
+                sphereX - sphereRadius > squareX &&
+                sphereX + sphereRadius < squareX + squareSize &&
+                sphereY - sphereRadius > squareY &&
+                sphereY + sphereRadius < squareY + squareSize
+            ) {
                 // Sphere is inside the square
                 ctx.fillStyle = 'green'; // Change color to green
                 ctx.fillRect(squareX, squareY, squareSize, squareSize);
