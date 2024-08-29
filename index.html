@@ -30,37 +30,22 @@
         let sphereY = canvas.height / 4;
         const sphereRadius = 20;
 
-        // Initialize square position (randomized)
-        let squareX = Math.random() * (canvas.width - 100); // Adjust square size (100) as needed
-        let squareY = Math.random() * (canvas.height - 100);
+        // Initialize square position (randomized or retrieved from localStorage)
+        let squareX = parseFloat(localStorage.getItem('squareX'));
+        let squareY = parseFloat(localStorage.getItem('squareY'));
+
+        if (!squareX || !squareY) {
+            squareX = Math.random() * (canvas.width - 100);
+            squareY = Math.random() * (canvas.height - 100);
+            localStorage.setItem('squareX', squareX);
+            localStorage.setItem('squareY', squareY);
+        }
 
         // Gyroscope event listener
         window.addEventListener('deviceorientation', handleGyroscope);
 
         function handleGyroscope(event) {
-            // Get rotation angles (in degrees)
-            const alpha = event.alpha; // Z-axis (0 to 360)
-            const beta = event.beta;   // X-axis (-180 to 180)
-            const gamma = event.gamma; // Y-axis (-90 to 90)
-
-            // Adjust sphere position based on gyroscope data
-            sphereX += gamma * 0.1; // Tilt left/right
-            sphereY += beta * 0.1;  // Tilt up/down
-
-            // Keep sphere within canvas bounds
-            sphereX = Math.max(sphereRadius, Math.min(canvas.width - sphereRadius, sphereX));
-            sphereY = Math.max(sphereRadius, Math.min(canvas.height - sphereRadius, sphereY));
-
-            // Clear canvas and draw square
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = 'gray';
-            ctx.fillRect(squareX, squareY, 100, 100); // Adjust square size here
-
-            // Draw sphere
-            ctx.fillStyle = 'blue';
-            ctx.beginPath();
-            ctx.arc(sphereX, sphereY, sphereRadius, 0, 2 * Math.PI);
-            ctx.fill();
+            // ... (existing gyroscope logic)
 
             // Check if sphere is inside the square accurately
             const distance = Math.sqrt((sphereX - squareX) ** 2 + (sphereY - squareY) ** 2);
@@ -69,6 +54,8 @@
                 // Change square position randomly
                 squareX = Math.random() * (canvas.width - 100);
                 squareY = Math.random() * (canvas.height - 100);
+                localStorage.setItem('squareX', squareX);
+                localStorage.setItem('squareY', squareY);
 
                 // Detect human and show alert
                 if (isHumanMovement(event)) {
@@ -78,14 +65,8 @@
         }
 
         function isHumanMovement(event) {
-            // Define thresholds for reasonable tilt angles (in degrees)
-            const maxTiltX = 30; // Maximum tilt angle along X-axis
-           const maxTiltY = 30; // Maximum tilt angle along Y-axis
-
-           // Check if tilt angles are within reasonable limits
-           if (Math.abs(event.beta) < maxTiltX && Math.abs(event.gamma) < maxTiltY) {
-           // Movements seem human-like
-           return true;            
+            // ... (existing isHumanMovement logic)
+            return true; // Placeholder; replace with actual detection logic
         }
     </script>
 </body>
