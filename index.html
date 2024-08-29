@@ -4,19 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sphere in Square Game</title>
-    <style>
-        body {
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #f0f0f0;
-        }
-        canvas {
-            border: 2px solid #333;
-        }
-    </style>
 </head>
 <body>
     <canvas id="gameCanvas" width="400" height="400"></canvas>
@@ -25,48 +12,59 @@
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
 
-        // Initialize sphere position (far apart from square)
-        let sphereX = canvas.width / 4;
-        let sphereY = canvas.height / 4;
+        // Initialize square position
+        const squareX = 150;
+        const squareY = 150;
+        const squareSize = 100;
+
+        // Initialize sphere position
+        let sphereX = canvas.width / 2;
+        let sphereY = canvas.height / 2;
         const sphereRadius = 20;
 
-        // Initialize square position (randomized or retrieved from localStorage)
-        let squareX = parseFloat(localStorage.getItem('squareX'));
-        let squareY = parseFloat(localStorage.getItem('squareY'));
-
-        if (!squareX || !squareY) {
-            squareX = Math.random() * (canvas.width - 100);
-            squareY = Math.random() * (canvas.height - 100);
-            localStorage.setItem('squareX', squareX);
-            localStorage.setItem('squareY', squareY);
+        // Request gyroscope permission
+        if (window.DeviceOrientationEvent) {
+            window.addEventListener('deviceorientation', handleGyroscope);
+        } else {
+            alert('Gyroscope not supported on this device.');
         }
-
-        // Gyroscope event listener
-        window.addEventListener('deviceorientation', handleGyroscope);
 
         function handleGyroscope(event) {
-            // ... (existing gyroscope logic)
+            // Get rotation angles (in degrees)
+            const alpha = event.alpha; // Z-axis (0 to 360)
+            const beta = event.beta;   // X-axis (-180 to 180)
+            const gamma = event.gamma; // Y-axis (-90 to 90)
 
-            // Check if sphere is inside the square accurately
+            // Adjust sphere position based on gyroscope data
+            sphereX += gamma * 0.1; // Tilt left/right
+            sphereY += beta * 0.1;  // Tilt up/down
+
+            // Keep sphere within canvas bounds
+            sphereX = Math.max(sphereRadius, Math.min(canvas.width - sphereRadius, sphereX));
+            sphereY = Math.max(sphereRadius, Math.min(canvas.height - sphereRadius, sphereY));
+
+            // Clear canvas and draw square
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'gray';
+            ctx.fillRect(squareX, squareY, squareSize, squareSize);
+
+            // Draw sphere
+            ctx.fillStyle = 'blue';
+            ctx.beginPath();
+            ctx.arc(sphereX, sphereY, sphereRadius, 0, 2 * Math.PI);
+            ctx.fill();
+
+            // Check if sphere is inside the square
             const distance = Math.sqrt((sphereX - squareX) ** 2 + (sphereY - squareY) ** 2);
-            if (distance < sphereRadius + 50) { // Adjust threshold (50) as needed
+            if (distance < sphereRadius + squareSize / 2) {
                 // Sphere is inside the square
-                // Change square position randomly
-                squareX = Math.random() * (canvas.width - 100);
-                squareY = Math.random() * (canvas.height - 100);
-                localStorage.setItem('squareX', squareX);
-                localStorage.setItem('squareY', squareY);
-
-                // Detect human and show alert
-                if (isHumanMovement(event)) {
-                    alert('Human detected! You win!');
-                }
+                ctx.fillStyle = 'green'; // Change color to green
+                ctx.fillRect(squareX, squareY, squareSize, squareSize);
+                ctx.fillStyle = 'yellow'; // Change sphere color to yellow
+                ctx.beginPath();
+                ctx.arc(sphereX, sphereY, sphereRadius, 0, 2 * Math.PI);
+                ctx.fill();
             }
-        }
-
-        function isHumanMovement(event) {
-            // ... (existing isHumanMovement logic)
-            return true; // Placeholder; replace with actual detection logic
         }
     </script>
 </body>
