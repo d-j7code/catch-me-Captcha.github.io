@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sphere in Square Game</title>
+</head>
+<body>
+    <canvas id="gameCanvas" width="400" height="400"></canvas>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Initialize square position
+        const squareX = 150;
+        const squareY = 150;
+        const squareSize = 100;
+
+        // Initialize sphere position
+        let sphereX = canvas.width / 2;
+        let sphereY = canvas.height / 2;
+        const sphereRadius = 20;
+
+        // Request gyroscope permission
+        if (window.DeviceOrientationEvent) {
+            window.addEventListener('deviceorientation', handleGyroscope);
+        } else {
+            alert('Gyroscope not supported on this device.');
+        }
+
+        function handleGyroscope(event) {
+            // Get rotation angles (in degrees)
+            const alpha = event.alpha; // Z-axis (0 to 360)
+            const beta = event.beta;   // X-axis (-180 to 180)
+            const gamma = event.gamma; // Y-axis (-90 to 90)
+
+            // Adjust sphere position based on gyroscope data
+            sphereX += gamma * 0.1; // Tilt left/right
+            sphereY += beta * 0.1;  // Tilt up/down
+
+            // Keep sphere within canvas bounds
+            sphereX = Math.max(sphereRadius, Math.min(canvas.width - sphereRadius, sphereX));
+            sphereY = Math.max(sphereRadius, Math.min(canvas.height - sphereRadius, sphereY));
+
+            // Clear canvas and draw square
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'gray';
+            ctx.fillRect(squareX, squareY, squareSize, squareSize);
+
+            // Draw sphere
+            ctx.fillStyle = 'blue';
+            ctx.beginPath();
+            ctx.arc(sphereX, sphereY, sphereRadius, 0, 2 * Math.PI);
+            ctx.fill();
+
+            // Check if sphere is inside the square
+            const distance = Math.sqrt((sphereX - squareX) ** 2 + (sphereY - squareY) ** 2);
+            if (distance < sphereRadius + squareSize / 2) {
+                // Sphere is inside the square
+                ctx.fillStyle = 'green'; // Change color to green
+                ctx.fillRect(squareX, squareY, squareSize, squareSize);
+                ctx.fillStyle = 'yellow'; // Change sphere color to yellow
+                ctx.beginPath();
+                ctx.arc(sphereX, sphereY, sphereRadius, 0, 2 * Math.PI);
+                ctx.fill();
+            }
+        }
+    </script>
+</body>
+</html>
