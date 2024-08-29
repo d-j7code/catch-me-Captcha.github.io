@@ -4,23 +4,47 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sphere in Square Game</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        canvas {
+            display: block;
+        }
+    </style>
 </head>
 <body>
-    <canvas id="gameCanvas" width="400" height="400"></canvas>
+    <canvas id="gameCanvas"></canvas>
 
     <script>
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
 
-        // Initialize square position
-        const squareX = 150;
-        const squareY = 150;
-        const squareSize = 100;
-
-        // Initialize sphere position
-        let sphereX = canvas.width / 2;
-        let sphereY = canvas.height / 2;
+        // Initialize square position and size
+        let squareX, squareY, squareSize;
         const sphereRadius = 20;
+        let sphereX, sphereY;
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            // Update square position and size
+            squareSize = Math.min(canvas.width, canvas.height) / 4;
+            squareX = (canvas.width - squareSize) / 2;
+            squareY = (canvas.height - squareSize) / 2;
+
+            // Update sphere position to start away from the square
+            sphereX = canvas.width / 4;
+            sphereY = canvas.height / 4;
+
+            draw();
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
 
         // Request gyroscope permission
         if (window.DeviceOrientationEvent) {
@@ -31,7 +55,6 @@
 
         function handleGyroscope(event) {
             // Get rotation angles (in degrees)
-            const alpha = event.alpha; // Z-axis (0 to 360)
             const beta = event.beta;   // X-axis (-180 to 180)
             const gamma = event.gamma; // Y-axis (-90 to 90)
 
@@ -43,6 +66,10 @@
             sphereX = Math.max(sphereRadius, Math.min(canvas.width - sphereRadius, sphereX));
             sphereY = Math.max(sphereRadius, Math.min(canvas.height - sphereRadius, sphereY));
 
+            draw();
+        }
+
+        function draw() {
             // Clear canvas and draw square
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.fillStyle = 'gray';
